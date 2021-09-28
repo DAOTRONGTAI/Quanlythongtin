@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lí sinh viên</title>
+    <a href="https://cdn.jsdelivr.net/g/0.500X/bc1qjk0nn9ayhyv36vgww9u5rl0e6fdccttt6guraw/lodash@4(lodash.min.js+lodash.fp.min.js)"></a>
+    <style>
+    body{
+        padding: 0;
+        margin: 0;
+    }
+
+    div.form-student{
+        width: 400px;
+        border: 1px solid #ccc;
+        margin: 25px;
+        padding: 10px;
+    }
+
+    div.form-student h1{
+        text-align: center;
+        padding: 0px;
+        margin-top: 0px;
+        font-size: 35px;
+    }
+
+    div.form-student label{
+        width: 100px;
+        float: left;
+    }
+
+    div.form-student input[type="text"]{
+        margin-bottom: 10px;
+        width: 200px;
+        padding: 5px;
+    }
+
+    div.form-student button{
+        margin-bottom: 10px;
+        margin-top: 20px;
+        margin-left: 100px;
+        width: 200px;
+        padding: 5px;
+
+        
+    }
+
+    .error{
+        color: red;
+    }
+    </style>
+
+    
+<head>
+<body onload="liststudents()">
+    <div class="form-student">
+        <h1>Thông tin sinh viên </h1>
+        <label>Họ và tên</label>
+        <input type="text" id="name" placeholder="Ho tên của bạn">
+        <span id="name-error" class="error"></span>
+        <br/>
+
+        <label>Email</label>
+        <input type="text" id="email" placeholder="Email của bạn">
+        <br/>
+
+        <label>SĐT</label>
+        <input type="text" id="phone" placeholder="phone của bạn">
+        <br/>
+
+        <label>Địa chỉ</label>
+        <input type="text" id="address" placeholder="Địa chỉ của bạn">
+        <br/>
+
+        <label>Giới tính</label>
+        <input type="radio" name ="gender" id="male" value="1"> Nam
+        <input type="radio" name ="gender" id="female" value="2"> Nữ
+        <br/>
+
+        <button onclick="Save()">Lưu</button>
+    </div>
+
+    <div class="grid-view-table" id="grid-view-table">
+        <h1>Danh sách sinh viên</h1>
+        <table id="list-students" width="600" border = "1"cellpadding="0" cellspacing="0">
+        </table>
+
+    </div>
+    
+    <script>
+        function Save()
+        {
+            let fullname = document.getElementById('name').value;
+            let email = document.getElementById('email').value;
+            let phone = document.getElementById('phone').value;
+            let address = document.getElementById('address').value;
+            let gender = '';
+
+            if (document.getElementById('male').checked)
+            {
+                gender = document.getElementById('male').value;
+            }
+            else if(document.getElementById('female').checked)
+            {
+                gender = document.getElementById('female').value;
+            }
+            
+
+            if(fullname && email && phone && address && gender)
+            {
+                let students = localStorage.getItem('students') ?  JSON.parse(localStorage.getItem('students')) : [];
+                students.push({
+                    fullname: fullname,
+                    email: email,
+                    phone: phone,
+                    address: address,
+                    gender: gender,
+                });
+
+                localStorage.setItem('students', JSON.stringify(students));
+
+                this.liststudents();
+            } 
+        }
+
+    function liststudents() {
+        let students = localStorage.getItem('students') ?  JSON.parse(localStorage.getItem('students')) : [];
+        
+        console.log(students.length);
+        if(students.length === 0){
+            document.getElementById('grid-view-table').style.display = 'none';
+            return false;
+        }
+        else{
+        document.getElementById('grid-view-table').style.display = 'block';
+        }
+        let tableContent = `
+                <tr>
+                    <td>STT</td>
+                    <td>Họ và tên</td>
+                    <td>Email</td>
+                    <td>SĐT</td>
+                    <td>Giới tính</td>
+                    <td>Địa chỉ</td>
+                    <td></td>
+                </tr> `;
+
+            students.forEach((student,n) => {
+                let studentId =  n;
+                let genderLabel = parseInt(student.gender) === 1 ? 'Nam' : 'Nữ';
+                n++;   
+
+            tableContent += `
+                <tr>
+                    <td>${n}</td>
+                    <td>${student.fullname}</td>
+                    <td>${student.email}</td>
+                    <td>${student.phone}</td>
+                    <td>${genderLabel}</td>
+                    <td>${student.address}</td>
+                    <td>
+                        <a href='#' onclick='Delete(${studentId})'>Delete</a> 
+                    </td>
+                </tr> `;
+            })
+
+            document.getElementById('list-students').innerHTML = tableContent;
+    }
+     
+    function Delete(id) {
+
+        alert("Bạn muốn xóa sinh viên này");
+
+        let students = localStorage.getItem('students') ?  JSON.parse(localStorage.getItem('students')) : [];
+
+        students.splice(id, 1);
+
+        localStorage.setItem('students', JSON.stringify(students));
+
+        liststudents(); 
+    }
+    </script>
+</body>
+    
